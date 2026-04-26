@@ -108,6 +108,7 @@ jobs:
   create_release:
     name: Publish release
     needs:
+      - create_tag
       - build-and-push
     if: ${{ needs.build-and-push.result == 'success' }}
     uses: vinitu/github-workflows/.github/workflows/workflow-create-release.yml@v0.1.9
