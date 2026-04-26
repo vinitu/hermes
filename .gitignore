@@ -1,0 +1,9 @@
+# Dependencies
+# (none — everything is in the Docker image)
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
