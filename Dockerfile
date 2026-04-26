@@ -3,6 +3,7 @@ FROM nousresearch/hermes-agent:v2026.4.23
 ARG HIMALAYA_VERSION=v1.2.0
 ARG KUBECTL_VERSION=v1.32.3
 
+USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install system packages + python deps + tools — all baked into the image
@@ -47,5 +48,7 @@ RUN ARCH=$(uname -m) && \
     curl -fsLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/kubectl
+
+USER hermes
 
 # Entry point is inherited from the base image — hermes gateway run
