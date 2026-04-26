@@ -3,7 +3,10 @@ FROM nousresearch/hermes-agent:latest
 ARG HIMALAYA_VERSION=v1.2.0
 ARG KUBECTL_VERSION=v1.32.3
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Install system packages + python deps + tools — all baked into the image
+# hadolint ignore=DL3008
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       curl \
@@ -30,7 +33,7 @@ RUN ARCH=$(uname -m) && \
       x86_64)  HIMALAYA_ARCH="x86_64" ;; \
       *)       echo "Unsupported arch: $ARCH" && exit 1 ;; \
     esac && \
-    curl -sL "https://github.com/pimalaya/himalaya/releases/download/${HIMALAYA_VERSION}/himalaya.${HIMALAYA_ARCH}-linux.tgz" \
+    curl -fsSL "https://github.com/pimalaya/himalaya/releases/download/${HIMALAYA_VERSION}/himalaya.${HIMALAYA_ARCH}-linux.tgz" \
       | tar xz -C /usr/local/bin himalaya && \
     chmod +x /usr/local/bin/himalaya
 
@@ -41,11 +44,9 @@ RUN ARCH=$(uname -m) && \
       x86_64)  KUBECTL_ARCH="amd64" ;; \
       *)       echo "Unsupported arch: $ARCH" && exit 1 ;; \
     esac && \
-    curl -sLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" && \
+    curl -fsLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" && \
     chmod +x kubectl && \
-    mv kubectl /usr/local/bin/kubectl
-
-# Verify tools are available
-RUN himalaya --version && kubectl version --client --no-interactive 2>/dev/null || true
+    mv kubectl /usr/local/bin/kubectl && \
+    kubectl version --client --no-interactive 2>/dev/null || true
 
 # Entry point is inherited from the base image — hermes gateway run
