@@ -36,10 +36,13 @@ jobs:
     needs:
       - lint
     if: |
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      github.actor != 'github-actions[bot]' &&
-      needs.lint.result == 'success'
+      (
+        github.event_name == 'push' &&
+        github.ref == 'refs/heads/main' &&
+        github.actor != 'github-actions[bot]'
+      ) || (
+        github.event_name == 'workflow_dispatch'
+      )
     uses: vinitu/github-workflows/.github/workflows/workflow-compute-next-tag.yml@v0.1.9
     with:
       target-branch: main
